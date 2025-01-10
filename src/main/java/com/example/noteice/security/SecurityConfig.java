@@ -27,7 +27,7 @@ public class SecurityConfig {
         return httpSecurity.authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/noteice/auth/**").permitAll()
-                                .requestMatchers("/noteice/notes/**").permitAll()//.hasRole("USER").anyRequest().authenticated()
+                                .requestMatchers("/noteice/notes/**").authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

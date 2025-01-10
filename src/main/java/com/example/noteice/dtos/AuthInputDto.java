@@ -1,6 +1,6 @@
 package com.example.noteice.dtos;
 
-public record SignInDto(
+public record AuthInputDto(
         String login,
         String password
 ) {

@@ -1,7 +1,7 @@
 package com.example.noteice.services;
 
+import com.example.noteice.dtos.AuthInputDto;
 import com.example.noteice.dtos.JwtResponse;
-import com.example.noteice.dtos.SignInDto;
 import com.example.noteice.repositories.UserRepository;
 import com.example.noteice.security.TokenProvider;
 import lombok.val;
@@ -21,7 +21,7 @@ public class SignInService implements UserDetailsService {
 
     public SignInService(UserRepository userRepository,
                          TokenProvider tokenProvider,
-                         // AuthenticationManager bean provided in SecurityConfig needs SignInRepository since it implements UserDetailsService (
+                         // AuthenticationManager bean provided in SecurityConfig needs SignInRepository (a real one) since it implements UserDetailsService (
                          // AuthenticationManager calls userDetailsService.loadUserByUsername(username) when using authenticationManager.authenticate),
                          // which in turn uses AuthenticationManager below. So we first need to create AuthenticationManager,
                          // and insert it below only when it's used (when signIn is called)
@@ -36,9 +36,9 @@ public class SignInService implements UserDetailsService {
         return userRepository.findByLogin(username);
     }
 
-    public JwtResponse signIn(SignInDto signInDto) {
+    public JwtResponse signIn(AuthInputDto authInputDto) {
         val auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signInDto.login(), signInDto.password()));
+                new UsernamePasswordAuthenticationToken(authInputDto.login(), authInputDto.password()));
         val accessToken = tokenProvider.generateAccessToken(auth.getName());
         val refreshToken = tokenProvider.generateRefreshToken(auth.getName());
         return new JwtResponse(accessToken, refreshToken);
