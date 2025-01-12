@@ -14,14 +14,14 @@ public class TokenProviderTests {
     private final String TEST_USERNAME = "username";
     private final String SECRET = "1Kj5vsHSjFd0ASJQfxWpthyJ/ATImtem9cIlvdqMEgUlB1n2DANMVxfAow8idHxNUaD0UopPRKNtP5lcv0x8NA==";
     private final Integer ACCESS_TOKEN_EXPIRATION_HOURS = 1;
-    private final Integer REFRESH_TOKEN_EXPIRATION_HOURS = 2;
+    private final Integer REFRESH_TOKEN_EXPIRATION_DAYS = 2;
 
     @BeforeEach
     void setup() {
         tokenProvider = new TokenProvider();
         ReflectionTestUtils.setField(tokenProvider, "secretKey", SECRET);
         ReflectionTestUtils.setField(tokenProvider, "accessTokenExpirationHours", ACCESS_TOKEN_EXPIRATION_HOURS);
-        ReflectionTestUtils.setField(tokenProvider, "refreshTokenExpirationHours", REFRESH_TOKEN_EXPIRATION_HOURS);
+        ReflectionTestUtils.setField(tokenProvider, "refreshTokenExpirationDays", REFRESH_TOKEN_EXPIRATION_DAYS);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class TokenProviderTests {
     void generateAccessToken_WithInvalidSignature_ShouldThrowException() {
         TokenProvider tokenProviderWithInvalidSignature = new TokenProvider();
         ReflectionTestUtils.setField(tokenProviderWithInvalidSignature, "accessTokenExpirationHours", ACCESS_TOKEN_EXPIRATION_HOURS);
-        ReflectionTestUtils.setField(tokenProviderWithInvalidSignature, "refreshTokenExpirationHours", REFRESH_TOKEN_EXPIRATION_HOURS);
+        ReflectionTestUtils.setField(tokenProviderWithInvalidSignature, "refreshTokenExpirationDays", REFRESH_TOKEN_EXPIRATION_DAYS);
         ReflectionTestUtils.setField(tokenProviderWithInvalidSignature, "secretKey", "");
 
         assertThrows(JwtException.class, () -> tokenProviderWithInvalidSignature.generateRefreshToken(TEST_USERNAME));
@@ -53,7 +53,7 @@ public class TokenProviderTests {
     void generateRefreshToken_WithInvalidSignature_ShouldThrowException() {
         TokenProvider tokenProviderWithInvalidSignature = new TokenProvider();
         ReflectionTestUtils.setField(tokenProviderWithInvalidSignature, "accessTokenExpirationHours", ACCESS_TOKEN_EXPIRATION_HOURS);
-        ReflectionTestUtils.setField(tokenProviderWithInvalidSignature, "refreshTokenExpirationHours", ACCESS_TOKEN_EXPIRATION_HOURS);
+        ReflectionTestUtils.setField(tokenProviderWithInvalidSignature, "refreshTokenExpirationDays", ACCESS_TOKEN_EXPIRATION_HOURS);
         ReflectionTestUtils.setField(tokenProviderWithInvalidSignature, "secretKey", "");
 
         assertThrows(JwtException.class, () -> tokenProviderWithInvalidSignature.generateRefreshToken(TEST_USERNAME));
@@ -71,7 +71,7 @@ public class TokenProviderTests {
     void verifyToken_WithExpiredRefreshToken_ShouldThrowException() {
         TokenProvider tokenProviderWithExpiredToken = new TokenProvider();
         ReflectionTestUtils.setField(tokenProviderWithExpiredToken, "secretKey", SECRET);
-        ReflectionTestUtils.setField(tokenProviderWithExpiredToken, "refreshTokenExpirationHours", -1);
+        ReflectionTestUtils.setField(tokenProviderWithExpiredToken, "refreshTokenExpirationDays", -1);
 
         String token = tokenProviderWithExpiredToken.generateRefreshToken(TEST_USERNAME);
         assertThrows(TokenNotValidException.class, () -> tokenProvider.verifyToken(token));

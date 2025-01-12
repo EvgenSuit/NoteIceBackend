@@ -7,6 +7,7 @@ import com.example.noteice.services.SignUpService;
 import com.example.noteice.services.TokenRefreshService;
 import com.example.noteice.utils.TokenNotValidException;
 import com.example.noteice.utils.UserAlreadyExistsException;
+import jakarta.validation.Valid;
 import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,14 +33,14 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody AuthInputDto authInputDto) {
+    public ResponseEntity<?> signUp(@RequestBody @Valid AuthInputDto authInputDto) {
         signUpService.signUp(authInputDto);
         val authResponse = signInService.signIn(new AuthInputDto(authInputDto.login(), authInputDto.password()));
         return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody AuthInputDto authInputDto) {
+    public ResponseEntity<?> signIn(@RequestBody @Valid AuthInputDto authInputDto) {
         val authResponse = signInService.signIn(new AuthInputDto(authInputDto.login(), authInputDto.password()));
         return ResponseEntity.ok(authResponse);
     }

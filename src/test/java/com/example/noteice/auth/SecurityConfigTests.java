@@ -81,7 +81,7 @@ public class SecurityConfigTests {
     @Test
     @DirtiesContext
     void makeRequestToAuth_notAuthenticated_ShouldNotReturn403() throws Exception {
-        User user = new User(null, "user", "password123");
+        User user = new User(null, "user@gmail.com", "Password123$");
         mockMvc.perform(post(rootAuthUrl + "signup")
                         .content(new ObjectMapper().writeValueAsBytes(new AuthInputDto(user.getLogin(), user.getPassword())))
                         .contentType(MediaType.APPLICATION_JSON))

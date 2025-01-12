@@ -24,6 +24,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
 
+    // @RestControllerAdvice does not work for filters, so we have to manually resolve exceptions here
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver resolver;
