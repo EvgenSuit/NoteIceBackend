@@ -28,6 +28,13 @@ public class User implements UserDetails {
 
     String login;
     String password;
+    boolean enabled = false;
+
+    public User(Long id, String login, String encodedPassword) {
+        this.id = id;
+        this.login = login;
+        this.password = encodedPassword;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

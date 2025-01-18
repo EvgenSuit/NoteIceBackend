@@ -4,27 +4,20 @@ import com.example.noteice.dtos.AuthInputDto;
 import com.example.noteice.dtos.User;
 import com.example.noteice.repositories.UserRepository;
 import com.example.noteice.security.TokenProvider;
-import com.example.noteice.utils.TokenNotValidException;
+import com.example.noteice.services.auth.UserVerificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,9 +30,14 @@ public class SecurityConfigTests {
     MockMvc mockMvc;
     @MockitoBean
     TokenProvider tokenProvider;
+
     // Security filter uses userRepository to extract user authorities by login
     @Autowired
     UserRepository userRepository;
+
+    // use fake UserVerificationService for sign up testing
+    @MockitoBean
+    UserVerificationService userVerificationService;
 
     private final String rootNotesUrl = "/noteice/notes/";
     private final String rootAuthUrl = "/noteice/auth/";
@@ -47,7 +45,7 @@ public class SecurityConfigTests {
     @Test
     void validateToken_TokenInvalid_ShouldReturn401Error() throws Exception {
         String invalidToken = "invalid-token";
-        when(tokenProvider.verifyToken(invalidToken)).thenThrow(new TokenNotValidException(null));
+        when(tokenProvider.verifyToken(invalidToken)).thenThrow(new JwtException(""));
 
         mockMvc.perform(get(rootNotesUrl)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + invalidToken))
@@ -85,6 +83,6 @@ public class SecurityConfigTests {
         mockMvc.perform(post(rootAuthUrl + "signup")
                         .content(new ObjectMapper().writeValueAsBytes(new AuthInputDto(user.getLogin(), user.getPassword())))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                        .andExpect(status().isOk());
     }
 }

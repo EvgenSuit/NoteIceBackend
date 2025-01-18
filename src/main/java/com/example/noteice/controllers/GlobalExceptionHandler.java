@@ -1,28 +1,22 @@
 package com.example.noteice.controllers;
 
 import com.example.noteice.utils.InputFieldError;
-import com.example.noteice.utils.TokenNotValidException;
 import com.example.noteice.utils.UnauthorizedException;
 import com.example.noteice.utils.UserAlreadyExistsException;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.jsonwebtoken.JwtException;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -32,15 +26,14 @@ public class GlobalExceptionHandler {
         this.messageSource = messageSource;
     }
 
-    @ExceptionHandler(TokenNotValidException.class)
-    public ResponseEntity<?> handleTokenNotValidException(TokenNotValidException e) {
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<?> handleTokenNotValidException(JwtException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Access token not valid: " + e.getMessage());
+                .body("Token creation or verification exception: " + e.getMessage());
     }
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<?> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
+    public ResponseEntity<?> handleUserAlreadyExistsException() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
     @ExceptionHandler({ AuthenticationException.class, UnauthorizedException.class })
     public ResponseEntity<?> handleAuthenticationException(Exception e) {
@@ -50,10 +43,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException e,
                                                        Locale locale) {
-        List<InputFieldError> fieldErrors = e.getBindingResult().getAllErrors().stream()
-                .map(error -> new InputFieldError(messageSource.getMessage(error, locale)))
-                .toList();
+        Map<String, String> errors = new HashMap<>();
+        e.getBindingResult().getAllErrors().forEach((error) -> {
+            errors.put(((FieldError)error).getField(), messageSource.getMessage(error, locale));
+        });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(fieldErrors);
+                .body(errors);
     }
 }

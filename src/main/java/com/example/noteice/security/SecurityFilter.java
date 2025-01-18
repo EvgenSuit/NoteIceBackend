@@ -1,8 +1,8 @@
 package com.example.noteice.security;
 
 import com.example.noteice.repositories.UserRepository;
-import com.example.noteice.utils.TokenNotValidException;
 import com.example.noteice.utils.UnauthorizedException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +51,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
             }
             filterChain.doFilter(request, response);
-        } catch (TokenNotValidException e) {
+        } catch (JwtException e) {
             resolver.resolveException(request, response, null, e);
         }
     }

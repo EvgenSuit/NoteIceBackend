@@ -1,5 +1,7 @@
-package com.example.noteice.security;
+package com.example.noteice.configs.security;
 
+import com.example.noteice.security.SecurityFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +30,13 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/noteice/auth/**").permitAll()
                                 .requestMatchers("/noteice/notes/**").authenticated()
+                )
+                .logout(logout -> logout
+                    .logoutUrl("/noteice/auth/logout")
+                    .logoutSuccessHandler((request, response, authentication) ->
+                            response.setStatus(HttpServletResponse.SC_OK))
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

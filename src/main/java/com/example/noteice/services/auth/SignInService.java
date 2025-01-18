@@ -1,4 +1,4 @@
-package com.example.noteice.services;
+package com.example.noteice.services.auth;
 
 import com.example.noteice.dtos.AuthInputDto;
 import com.example.noteice.dtos.JwtResponse;

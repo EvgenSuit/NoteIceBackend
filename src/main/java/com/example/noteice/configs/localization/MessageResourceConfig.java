@@ -1,4 +1,4 @@
-package com.example.noteice.localization;
+package com.example.noteice.configs.localization;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

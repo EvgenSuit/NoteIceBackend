@@ -1,21 +1,16 @@
 package com.example.noteice.dtos;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import com.example.noteice.validators.auth.password.PasswordValidatorInterface;
+import jakarta.validation.constraints.*;
 
 public record AuthInputDto(
         @NotBlank(message = "{login.notBlank}")
         @Email(message = "{login.email}")
         String login,
 
-        @NotBlank(message = "{password.notBlank}")
-        @Size(min = 8, max = 64, message = "{password.size}")
-        @Pattern(
-                regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]+$",
-                message = "{password.pattern}"
-        )
+        // use custom password validator since jakarta annotations don't strictly follow the order
+        // (e.g. when @NotBlank, @Size and @Pattern annotations are applied, and a password is blank or empty, any annotation other than @NotBlank is applied
+        @PasswordValidatorInterface
         String password
 ) {
 }

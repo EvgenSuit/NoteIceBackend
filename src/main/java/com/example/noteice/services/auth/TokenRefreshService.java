@@ -1,9 +1,7 @@
-package com.example.noteice.services;
+package com.example.noteice.services.auth;
 
 import com.example.noteice.dtos.JwtResponse;
-import com.example.noteice.dtos.RefreshJwtRequest;
 import com.example.noteice.security.TokenProvider;
-import com.example.noteice.utils.TokenNotValidException;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,7 @@ public class TokenRefreshService {
         this.tokenProvider = tokenProvider;
     }
 
-    public JwtResponse refreshToken(String refreshToken) throws TokenNotValidException {
+    public JwtResponse refreshToken(String refreshToken) {
         val login = tokenProvider.verifyToken(refreshToken);
         val newAccessToken = tokenProvider.generateAccessToken(login);
         val newRefreshToken = tokenProvider.generateRefreshToken(login);
