@@ -33,7 +33,9 @@ public class SignInService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByLogin(username);
+        UserDetails userDetails = userRepository.findByLogin(username);
+        if (userDetails == null) throw new UsernameNotFoundException(String.format("Username %s not found", username));
+        return userDetails;
     }
 
     public JwtResponse signIn(AuthInputDto authInputDto) {

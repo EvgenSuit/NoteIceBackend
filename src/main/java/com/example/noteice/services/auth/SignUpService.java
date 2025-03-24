@@ -3,8 +3,7 @@ package com.example.noteice.services.auth;
 import com.example.noteice.dtos.AuthInputDto;
 import com.example.noteice.dtos.User;
 import com.example.noteice.repositories.UserRepository;
-import com.example.noteice.utils.UserAlreadyExistsException;
-import lombok.val;
+import com.example.noteice.utils.auth.UserAlreadyExistsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

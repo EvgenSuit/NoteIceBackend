@@ -1,8 +1,8 @@
 package com.example.noteice.controllers;
 
-import com.example.noteice.utils.InputFieldError;
 import com.example.noteice.utils.UnauthorizedException;
-import com.example.noteice.utils.UserAlreadyExistsException;
+import com.example.noteice.utils.auth.UserAlreadyExistsException;
+import com.example.noteice.utils.notes.NoteNotFoundException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -27,9 +26,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(JwtException.class)
-    public ResponseEntity<?> handleTokenNotValidException(JwtException e) {
+    public ResponseEntity<?> handleTokenNotValidException(JwtException e,
+                                                          Locale locale) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Token creation or verification exception: " + e.getMessage());
+                .body(messageSource.getMessage("tokenCreationException", null, locale) + e.getMessage());
     }
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<?> handleUserAlreadyExistsException() {
@@ -37,6 +37,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler({ AuthenticationException.class, UnauthorizedException.class })
     public ResponseEntity<?> handleAuthenticationException(Exception e) {
+        System.out.println(e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(e.getMessage());
     }
@@ -49,5 +50,10 @@ public class GlobalExceptionHandler {
         });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errors);
+    }
+
+    @ExceptionHandler(NoteNotFoundException.class)
+    public ResponseEntity<?> handleNoteNotFoundException() {
+        return ResponseEntity.notFound().build();
     }
 }

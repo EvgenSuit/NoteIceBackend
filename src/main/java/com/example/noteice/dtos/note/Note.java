@@ -1,21 +1,22 @@
-package com.example.noteice.dtos;
+package com.example.noteice.dtos.note;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.ExtensionMethod;
+import lombok.*;
+
+import java.time.Instant;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Note {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,6 +26,10 @@ public class Note {
         String title;
         @JsonProperty("content")
         String content;
-        @JsonProperty("owner")
+        @JsonIgnore
         String owner;
+        @JsonProperty("createdAt")
+        Instant createdAt;
+        @JsonProperty("lastModifiedAt")
+        Instant lastModifiedAt;
 }
