@@ -29,6 +29,7 @@ public class SecurityConfig {
         return httpSecurity.authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/noteice/auth/**").permitAll()
+                                .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers("/noteice/notes/**").authenticated()
                 )
                 .logout(logout -> logout
